@@ -165,6 +165,8 @@ python message_miner/11_summarize.py --force # Re-run from scratch (ignore cache
 
 **Browser doesn't open for sign-in** — Make sure `http://localhost` is set as a redirect URI on the Azure app registration.
 
+**SSL certificate errors on a corporate network** — If your network inspects HTTPS traffic, have Python trust your organization's root certificate (for example, by setting `SSL_CERT_FILE` and `REQUESTS_CA_BUNDLE` to its path) rather than disabling certificate verification.
+
 **LLM script errors** — All LLM scripts are resume-safe. Re-run the same command and it continues from cache.
 
 **Charts show no data** — Re-run `python message_miner/12_wrapped.py` to regenerate the report.

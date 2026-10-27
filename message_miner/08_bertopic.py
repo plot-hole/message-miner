@@ -35,29 +35,6 @@ import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Corporate network SSL + CDN bypass.
-# huggingface_hub uses httpx internally. Patch both Client and AsyncClient so
-# every instance skips SSL verification. Also disable HF's XET/resolve-cache
-# CDN acceleration which requires auth and often 403s on corporate networks.
-import os as _os
-_os.environ.setdefault("HF_HUB_DISABLE_XET", "1")          # disable resolve-cache CDN
-_os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "0") # allow token passthrough
-
-import httpx as _httpx
-
-_orig_client_init = _httpx.Client.__init__
-def _no_ssl_client_init(self, *args, **kwargs):
-    kwargs["verify"] = False
-    _orig_client_init(self, *args, **kwargs)
-_httpx.Client.__init__ = _no_ssl_client_init
-
-_orig_async_init = _httpx.AsyncClient.__init__
-def _no_ssl_async_init(self, *args, **kwargs):
-    kwargs["verify"] = False
-    _orig_async_init(self, *args, **kwargs)
-_httpx.AsyncClient.__init__ = _no_ssl_async_init
-
-warnings.filterwarnings("ignore", message=".*SSL.*")
 warnings.filterwarnings("ignore", category=UserWarning)
 
 import numpy as np

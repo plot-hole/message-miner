@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ s0.user_name }} — Messages Wrapped</title>
+    <script>{{ plotly_js }}</script>
+    <style>
+        /* === Base === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0f0f0f;
+            color: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === Section Cards === */
+        .card {
+            min-height: 100vh;
+            padding: 80px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section:nth-child(even) .card,
+        section:nth-child(even) {
+            background: #141414;
+        }
+
+        /* === Typography === */
+        .section-label {
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            line-height: 1.1;
+        }
+
+        .big-number {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1.0;
+            margin-bottom: 8px;
+        }
+
+        .big-number-label {
+            font-size: 18px;
+            color: #999;
+            margin-bottom: 40px;
+        }
+
+        .callout {
+            font-size: 24px;
+            line-height: 1.4;
+            margin-bottom: 32px;
+            max-width: 700px;
+        }
+
+        .detail-text {
+            font-size: 16px;
+            color: #ccc;
+            max-width: 700px;
+            margin-bottom: 24px;
+        }
+
+        /* === Accent Colors === */
+        :root {
+            --accent-green:  #1DB954;
+            --accent-blue:   #4A90D9;
+            --accent-purple: #9B59B6;
+            --accent-orange: #E67E22;
+            --accent-pink:   #E91E63;
+            --accent-yellow: #F1C40F;
+            --accent-teal:   #1ABC9C;
+            --accent-red:    #E74C3C;
+        }
+
+        .accent-green  { color: var(--accent-green); }
+        .accent-blue   { color: var(--accent-blue); }
+        .accent-purple { color: var(--accent-purple); }
+        .accent-orange { color: var(--accent-orange); }
+        .accent-pink   { color: var(--accent-pink); }
+        .accent-yellow { color: var(--accent-yellow); }
+        .accent-teal   { color: var(--accent-teal); }
+        .accent-red    { color: var(--accent-red); }
+
+        /* === Chart Containers === */
+        .chart-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 24px 0;
+            min-height: 260px;
+        }
+
+        /* === Stat Grid === */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            margin: 32px 0;
+            max-width: 900px;
+        }
+
+        .stat-card {
+            padding: 24px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* === Horizontal Bar List === */
+        .bar-list {
+            list-style: none;
+            max-width: 700px;
+        }
+
+        .bar-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .bar-list .bar-label {
+            width: 160px;
+            font-size: 14px;
+            text-align: right;
+            padding-right: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+
+        .bar-list .bar-track {
+            flex: 1;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-list .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: var(--accent-green);
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 30px;
+            white-space: nowrap;
+        }
+
+        /* === Emoji Display === */
+        .emoji-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .emoji-item {
+            text-align: center;
+            min-width: 56px;
+        }
+
+        .emoji-item .emoji {
+            font-size: 48px;
+            display: block;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+        }
+
+        .emoji-item .count {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* === Person Cards === */
+        .person-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 24px 0;
+            max-width: 900px;
+        }
+
+        .person-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 180px;
+            flex: 1;
+        }
+
+        .person-card .person-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--accent-blue);
+        }
+
+        .person-card .topic-item,
+        .person-card .func-item {
+            font-size: 13px;
+            color: #bbb;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .person-card .topic-item:last-child,
+        .person-card .func-item:last-child {
+            border-bottom: none;
+        }
+
+        /* === Decision / Action Items List === */
+        .item-list {
+            list-style: none;
+            max-width: 800px;
+        }
+
+        .item-list li {
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #ddd;
+        }
+
+        .item-list li .item-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* === Action Item Cards === */
+        .ai-subsection-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #777;
+            margin: 20px 0 10px;
+        }
+
+        .ai-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            max-width: 800px;
+            font-size: 15px;
+            color: #ddd;
+        }
+
+        .ai-card.mine {
+            background: rgba(29,185,84,0.08);
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .ai-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .ai-date-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: #aaa;
+            background: rgba(255,255,255,0.10);
+            border-radius: 4px;
+            padding: 2px 7px;
+        }
+
+        .ai-card.mine .ai-date-badge {
+            background: rgba(29,185,84,0.20);
+            color: var(--accent-green);
+        }
+
+        .ai-participants {
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* === Word Pills === */
+        .word-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .word-pill {
+            background: rgba(29, 185, 84, 0.15);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
+            color: var(--accent-green);
+        }
+
+        /* === Vibe Rows === */
+        .vibe-row {
+            display: flex;
+            gap: 40px;
+            max-width: 800px;
+            margin: 16px 0;
+        }
+
+        .vibe-col { flex: 1; }
+
+        .vibe-col h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .vibe-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 15px;
+        }
+
+        .vibe-diff { font-size: 13px; color: #666; }
+
+        /* === Narrative Section === */
+        .narrative-text {
+            font-size: 20px;
+            line-height: 1.8;
+            max-width: 700px;
+            color: #e0e0e0;
+        }
+
+        .narrative-text p {
+            margin-bottom: 24px;
+        }
+
+        /* === Footer === */
+        footer {
+            text-align: center;
+            padding: 60px 40px;
+            color: #555;
+            font-size: 13px;
+            background: #0a0a0a;
+        }
+
+        footer p { margin-bottom: 8px; }
+
+        /* === Responsive === */
+        @media (max-width: 800px) {
+            .card { padding: 60px 24px; }
+            .big-number { font-size: 48px; }
+            .section-title { font-size: 32px; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .vibe-row { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===================================================================== -->
+<!-- Section 0: The Headline                                                -->
+<!-- ===================================================================== -->
+{% if s0 and not s0.get('error') %}
+<section id="headline">
+<div class="card">
+    <div class="section-label">Your Messages, Wrapped</div>
+    <div class="section-title">{{ s0.user_name }}</div>
+    {% if s0.date_first and s0.date_last %}
+    <div class="detail-text">{{ s0.date_first[:10] }} — {{ s0.date_last[:10] }}</div>
+    {% endif %}
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="number accent-green">{{ s0.total_messages_sent | number }}</div>
+            <div class="label">messages sent</div>
+        </div>
+        <div class="stat-card">
+            <div class="number accent-blue">{{ s0.total_words_written | number }}</div>
+            <div class="label">words written</div>
+        </div>
+        <div class="stat-card">
+            <div class="number accent-purple">{{ s0.total_conversations | number }}</div>
+            <div class="label">conversations</div>
+        </div>
+        <div class="stat-card">
+            <div class="number accent-orange">{{ s0.total_people | number }}</div>
+            <div class="label">people</div>
+        </div>
+    </div>
+
+    {% if s0.novel_equivalent %}
+    <div class="callout">
+        That's roughly <span class="accent-green">{{ s0.novel_equivalent }}</span> novels worth of words.
+    </div>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 1: Your Top People                                             -->
+<!-- ===================================================================== -->
+{% if s1 and not s1.get('error') %}
+<section id="top-people">
+<div class="card">
+    <div class="section-label">Section 1</div>
+    <div class="section-title">Your Top People</div>
+
+    {% if s1.ride_or_die %}
+    <div class="callout">
+        Your #1: <span class="accent-green">{{ s1.ride_or_die.name }}</span> —
+        {{ s1.ride_or_die.total_messages | number }} messages over
+        {{ s1.ride_or_die.active_days | number }} active days.
+        That's {{ s1.ride_or_die.messages_per_active_day }} messages per day.
+    </div>
+    {% endif %}
+
+    <div class="chart-container" id="chart-top-people"></div>
+
+    {% if s1.new_connections %}
+    <div class="detail-text">
+        You started talking to <span class="accent-blue">{{ s1.new_connections.count }}</span>
+        new {% if s1.new_connections.count == 1 %}person{% else %}people{% endif %} in the last year.
+        {% if s1.new_connections.names %}
+        Including: {{ s1.new_connections.names[:5] | join(", ") }}.
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 2: Your Calendar                                               -->
+<!-- ===================================================================== -->
+{% if s2 and not s2.get('error') %}
+<section id="calendar">
+<div class="card">
+    <div class="section-label">Section 2</div>
+    <div class="section-title">Your Calendar</div>
+
+    <div class="stat-grid">
+        {% if s2.peak_hour %}
+        <div class="stat-card">
+            <div class="number accent-green">{{ s2.peak_hour.hour }}:00</div>
+            <div class="label">peak hour (local)</div>
+        </div>
+        {% endif %}
+        {% if s2.after_hours_pct is not none %}
+        <div class="stat-card">
+            <div class="number accent-orange">{{ s2.after_hours_pct }}%</div>
+            <div class="label">after-hours messages</div>
+        </div>
+        {% endif %}
+        {% if s2.tz_offset_hours is not none %}
+        <div class="stat-card">
+            <div class="number accent-blue">UTC{% if s2.tz_offset_hours >= 0 %}+{% endif %}{{ s2.tz_offset_hours }}</div>
+            <div class="label">estimated timezone</div>
+        </div>
+        {% endif %}
+        {% if s2.most_active_season %}
+        <div class="stat-card">
+            <div class="number accent-purple">{{ s2.most_active_season.emoji }} {{ s2.most_active_season.season }}</div>
+            <div class="label">most active season</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="chart-container" id="chart-heatmap" style="height:260px;"></div>
+
+    {% if s2.peak_date %}
+    <div class="callout">
+        Your biggest day: <span class="accent-orange">{{ s2.peak_date.date }}</span> —
+        {{ s2.peak_date.count | number }} messages.
+    </div>
+    {% if s2.peak_date.summaries %}
+    <div class="detail-text">
+        What was happening:
+        <ul style="margin-top: 8px; padding-left: 20px;">
+        {% for summary in s2.peak_date.summaries %}
+            <li style="margin-bottom: 8px;">{{ summary }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="chart-container" id="chart-monthly-volume" style="height:300px;"></div>
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 3: Your Topics                                                 -->
+<!-- ===================================================================== -->
+{% if s3 and not s3.get('error') %}
+<section id="topics">
+<div class="card">
+    <div class="section-label">Section 3</div>
+    <div class="section-title">Your Topics</div>
+
+    {% if s3.top_10_topics %}
+    <div class="callout">
+        Your most-discussed topic:
+        <span class="accent-green">{{ s3.top_10_topics[0].label }}</span>
+        — {{ s3.top_10_topics[0].burst_count | number }} conversations.
+    </div>
+    {% endif %}
+
+    <div class="chart-container" id="chart-topics"></div>
+
+    {% if s3.topic_by_person %}
+    <div class="section-label" style="margin-top: 32px;">What you talk about with each person</div>
+    <div class="person-cards">
+        {% for person in s3.topic_by_person %}
+        <div class="person-card">
+            <div class="person-name">{{ person.person }}</div>
+            {% for t in person.topics %}
+            <div class="topic-item">{{ t.label }} <span style="color:#555;float:right">{{ t.count }}</span></div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if s3.longest_conversation %}
+    <div class="detail-text" style="margin-top: 32px;">
+        <strong style="color:#f0f0f0;">Longest conversation:</strong>
+        {{ s3.longest_conversation.msg_count | number }} messages,
+        {{ s3.longest_conversation.duration_minutes }} min
+        {% if s3.longest_conversation.participants %}
+        with {{ s3.longest_conversation.participants | join(", ") }}
+        {% endif %}.
+        {% if s3.longest_conversation.summary %}
+        <br><em style="color:#aaa;">{{ s3.longest_conversation.summary }}</em>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 4: Your Conversations                                          -->
+<!-- ===================================================================== -->
+{% if s4 and not s4.get('error') %}
+<section id="conversations">
+<div class="card">
+    <div class="section-label">Section 4</div>
+    <div class="section-title">Your Conversations</div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="number accent-green">{{ s4.total_bursts | number }}</div>
+            <div class="label">conversation bursts</div>
+        </div>
+        {% if s4.conversations_per_day is not none %}
+        <div class="stat-card">
+            <div class="number accent-blue">{{ s4.conversations_per_day }}</div>
+            <div class="label">conversations per day</div>
+        </div>
+        {% endif %}
+        {% if s4.initiator_pct is not none %}
+        <div class="stat-card">
+            <div class="number accent-purple">{{ s4.initiator_pct }}%</div>
+            <div class="label">you started it</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if s4.longest_streak and s4.longest_streak.days %}
+    <div class="callout">
+        Longest messaging streak: <span class="accent-green">{{ s4.longest_streak.days }} days</span>
+        {% if s4.longest_streak.start_date and s4.longest_streak.end_date %}
+        ({{ s4.longest_streak.start_date }} — {{ s4.longest_streak.end_date }})
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if s4.longest_gap and s4.longest_gap.days %}
+    <div class="detail-text">
+        Longest quiet period: <span class="accent-orange">{{ s4.longest_gap.days }} days</span>
+        {% if s4.longest_gap.start_date and s4.longest_gap.end_date %}
+        ({{ s4.longest_gap.start_date }} — {{ s4.longest_gap.end_date }})
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 5: Your Response Patterns                                      -->
+<!-- ===================================================================== -->
+{% if s5 and not s5.get('error') %}
+<section id="response-patterns">
+<div class="card">
+    <div class="section-label">Section 5</div>
+    <div class="section-title">Your Response Patterns</div>
+
+    <div class="stat-grid">
+        {% if s5.my_median_response_time_s is not none %}
+        <div class="stat-card">
+            <div class="number accent-green">{{ s5.my_median_response_time_s | duration }}</div>
+            <div class="label">your median response time</div>
+        </div>
+        {% endif %}
+        {% if s5.fastest_responder %}
+        <div class="stat-card">
+            <div class="number accent-blue" style="font-size:24px;">{{ s5.fastest_responder.name }}</div>
+            <div class="label">fastest to reply to you ({{ s5.fastest_responder.median_response_time_s | duration }})</div>
+        </div>
+        {% endif %}
+        {% if s5.slowest_responder %}
+        <div class="stat-card">
+            <div class="number accent-orange" style="font-size:24px;">{{ s5.slowest_responder.name }}</div>
+            <div class="label">slowest to reply ({{ s5.slowest_responder.median_response_time_s | duration }})</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if s5.my_response_by_person %}
+    <div class="detail-text">Who you respond to fastest:</div>
+    <div class="chart-container" id="chart-response-by-person"></div>
+    {% endif %}
+
+    <div class="chart-container" id="chart-response-trend" style="height:280px;"></div>
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 6: Your Emoji Game                                             -->
+<!-- ===================================================================== -->
+{% if s6 and not s6.get('error') %}
+<section id="emoji">
+<div class="card">
+    <div class="section-label">Section 6</div>
+    <div class="section-title">Your Emoji Game</div>
+
+    {% if s6.top_10_emoji %}
+    <div class="emoji-row">
+        {% for item in s6.top_10_emoji %}
+        <div class="emoji-item">
+            <span class="emoji">{{ item.emoji }}</span>
+            <span class="count">{{ item.count | number }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="stat-grid">
+        {% if s6.emoji_density is not none %}
+        <div class="stat-card">
+            <div class="number accent-green">{{ "%.2f"|format(s6.emoji_density) }}%</div>
+            <div class="label">your emoji density</div>
+        </div>
+        {% endif %}
+        {% if s6.org_avg_emoji_density is not none %}
+        <div class="stat-card">
+            <div class="number accent-blue">{{ "%.2f"|format(s6.org_avg_emoji_density) }}%</div>
+            <div class="label">org average</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if s6.signature_emoji %}
+    <div class="callout">
+        Your signature emoji: <span style="font-size:48px; font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">{{ s6.signature_emoji.emoji }}</span>
+        — you use it <span class="accent-green">{{ s6.signature_emoji.ratio_vs_average }}×</span>
+        more than average.
+    </div>
+    {% endif %}
+
+    {% if s6.most_reacted_message %}
+    <div class="detail-text">
+        <strong style="color:#f0f0f0;">Most reacted message</strong>
+        ({{ s6.most_reacted_message.reaction_count }} reactions, {{ s6.most_reacted_message.date }}):<br>
+        <em style="color:#aaa;">"{{ s6.most_reacted_message.text }}"</em>
+    </div>
+    {% endif %}
+
+    {% if s6.top_emoji_senders %}
+    <div class="section-label" style="margin-top: 32px;">Top emoji users in your network</div>
+    <div class="person-cards">
+        {% for p in s6.top_emoji_senders %}
+        <div class="person-card">
+            <div class="person-name">{{ p.name }}</div>
+            {% if p.signature_emoji %}
+            <div style="font-size: 32px; margin: 6px 0; font-family: 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif;">{{ p.signature_emoji.emoji }}</div>
+            {% endif %}
+            <div class="topic-item">{{ p.total_emoji | int }} emoji total</div>
+            <div class="topic-item">{{ p.emoji_per_100_words }} per 100 words</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if s6.emoji_partners %}
+    <div class="section-label" style="margin-top: 32px;">Who brings out your emoji side</div>
+    <ul class="bar-list">
+        {% set max_density = s6.emoji_partners[0].emoji_density %}
+        {% for p in s6.emoji_partners %}
+        <li>
+            <span class="bar-label">{{ p.name }}</span>
+            <div class="bar-track">
+                <div class="bar-fill" style="width: {{ (p.emoji_density / max_density * 100) | int }}%; background: var(--accent-yellow);">
+                    {{ "%.2f"|format(p.emoji_density) }}%
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 8: Your Words                                                  -->
+<!-- ===================================================================== -->
+{% if s8 and not s8.get('error') %}
+<section id="words">
+<div class="card">
+    <div class="section-label">Section 8</div>
+    <div class="section-title">Your Words</div>
+
+    <div class="stat-grid">
+        {% if s8.vocabulary_size is not none %}
+        <div class="stat-card">
+            <div class="number accent-green">{{ s8.vocabulary_size | number }}</div>
+            <div class="label">unique words used</div>
+        </div>
+        {% endif %}
+        {% if s8.reading_level and s8.reading_level.user_grade is not none %}
+        <div class="stat-card">
+            <div class="number accent-blue">{{ s8.reading_level.user_grade }}</div>
+            <div class="label">Flesch-Kincaid grade (org avg: {{ s8.reading_level.org_avg_grade }})</div>
+        </div>
+        {% endif %}
+        {% if s8.questions and s8.questions.total_asked %}
+        <div class="stat-card">
+            <div class="number accent-purple">{{ s8.questions.total_asked | number }}</div>
+            <div class="label">questions asked ({{ s8.questions.answer_rate }}% answered)</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if s8.distinctive_words %}
+    <div class="section-label" style="margin-top: 16px;">Words that define your voice</div>
+    <div class="word-pills">
+        {% for w in s8.distinctive_words %}
+        <span class="word-pill">{{ w.word }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if s8.top_entities %}
+    <div class="section-label" style="margin-top: 32px;">Things you talk about most</div>
+    <ul class="bar-list">
+        {% set max_mentions = s8.top_entities[0].mentions %}
+        {% for e in s8.top_entities %}
+        <li>
+            <span class="bar-label">{{ e.entity }}</span>
+            <div class="bar-track">
+                <div class="bar-fill" style="width: {{ (e.mentions / max_mentions * 100) | int }}%; background: var(--accent-purple);">
+                    {{ e.mentions }}
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if s8.questions and s8.questions.top_recipients %}
+    <div class="detail-text" style="margin-top: 32px;">
+        <strong style="color:#f0f0f0;">Who you ask the most questions:</strong>
+        {{ s8.questions.top_recipients | map(attribute='name') | join(", ") }}.
+    </div>
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 9: Conversations, Classified                                   -->
+<!-- ===================================================================== -->
+{% if s9 and not s9.get('error') %}
+<section id="classified">
+<div class="card">
+    <div class="section-label">Section 9</div>
+    <div class="section-title">Conversations, Classified</div>
+
+    {% if s9.function_distribution %}
+    <div class="callout">
+        Most common conversation type:
+        <span class="accent-green">{{ s9.function_distribution[0].function | replace('_', ' ') }}</span>
+        — {{ s9.function_distribution[0].pct }}% of your conversations.
+    </div>
+    {% endif %}
+
+    <div class="chart-container" id="chart-functions"></div>
+
+    <div class="stat-grid">
+        {% if s9.avg_depth is not none %}
+        <div class="stat-card">
+            <div class="number accent-blue">{{ s9.avg_depth }}</div>
+            <div class="label">average conversation depth (1–5)</div>
+        </div>
+        {% endif %}
+        {% if s9.deepest_person %}
+        <div class="stat-card">
+            <div class="number accent-purple" style="font-size:24px;">{{ s9.deepest_person.name }}</div>
+            <div class="label">deepest conversations (avg depth {{ s9.deepest_person.avg_depth }})</div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if s9.function_by_person %}
+    <div class="section-label" style="margin-top: 32px;">What you do in conversations by person</div>
+    <div class="person-cards">
+        {% for person in s9.function_by_person %}
+        <div class="person-card">
+            <div class="person-name">{{ person.person }}</div>
+            {% for f in person.functions %}
+            <div class="func-item">{{ f.function | replace('_', ' ') }} <span style="color:#555;float:right">{{ f.count }}</span></div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if s9.recent_decisions %}
+    <div class="section-label" style="margin-top: 40px;">Recent decisions</div>
+    <ul class="item-list">
+        {% for d in s9.recent_decisions %}
+        <li>
+            {{ d.decision_text }}
+            <div class="item-meta">{{ d.date }}{% if d.participants %} · {{ d.participants }}{% endif %}</div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if s9.questions_stats %}
+    <div class="section-label" style="margin-top: 40px;">Questions (last 30 days)</div>
+
+    <div class="callout" style="font-size:18px; margin: 16px 0 20px;">
+        You asked <span class="accent-green">{{ s9.questions_stats.you_asked }}</span> questions.
+        Others asked <span class="accent-blue">{{ s9.questions_stats.others_asked }}</span> in your conversations.
+    </div>
+
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+
+        {% if s9.my_questions %}
+        <div style="flex:1; min-width:0;">
+            <div class="ai-subsection-label" style="margin-top:0;">Asked by you</div>
+            {% for q in s9.my_questions %}
+            <div class="ai-card mine">
+                <div>{{ q.text }}</div>
+                <div class="ai-footer">
+                    <span class="ai-date-badge">{{ q.date }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if s9.other_questions %}
+        <div style="flex:1; min-width:0;">
+            <div class="ai-subsection-label" style="margin-top:0;">Asked by others</div>
+            {% for q in s9.other_questions %}
+            <div class="ai-card">
+                <div><strong style="color: var(--accent-blue);">{{ q.sender }}</strong> — {{ q.text }}</div>
+                <div class="ai-footer">
+                    <span class="ai-date-badge">{{ q.date }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    {% if s9.recent_action_items %}
+    {% set my_items     = s9.recent_action_items | selectattr('owner', 'equalto', s0.user_name) | list %}
+    {% set others_items = s9.recent_action_items | rejectattr('owner', 'equalto', s0.user_name) | list %}
+
+    <div class="section-label" style="margin-top: 32px;">Action items (last 30 days)</div>
+
+    {% if my_items %}
+    <div class="callout" style="font-size:18px; margin: 16px 0 20px;">
+        You have <span class="accent-green">{{ my_items | length }}</span> action item{{ 's' if my_items | length != 1 else '' }} in the last 30 days.
+    </div>
+    {% endif %}
+
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+
+        {% if my_items %}
+        <div style="flex:1; min-width:0;">
+            <div class="ai-subsection-label" style="margin-top:0;">Assigned to you</div>
+            {% for a in my_items %}
+            <div class="ai-card mine">
+                <div>{{ a.task }}</div>
+                <div class="ai-footer">
+                    <span class="ai-date-badge">{{ a.date }}</span>
+                    {% if a.participants %}<span class="ai-participants">{{ a.participants }}</span>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if others_items %}
+        <div style="flex:1; min-width:0;">
+            <div class="ai-subsection-label" style="margin-top:0;">Assigned to others in your conversations</div>
+            {% for a in others_items[:20] %}
+            <div class="ai-card">
+                <div><strong style="color: var(--accent-yellow);">{{ a.owner }}</strong> — {{ a.task }}</div>
+                <div class="ai-footer">
+                    <span class="ai-date-badge">{{ a.date }}</span>
+                    {% if a.participants %}<span class="ai-participants">{{ a.participants }}</span>{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% if others_items | length > 20 %}
+            <div style="font-size:13px; color:#666; margin-top:8px;">+ {{ others_items | length - 20 }} more not shown.</div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Section 10: Narrative                                                  -->
+<!-- ===================================================================== -->
+{% if s10 and s10.get('narrative') %}
+<section id="narrative">
+<div class="card">
+    <div class="section-label">Section 10</div>
+    <div class="section-title">Your Year in Review</div>
+
+    <div class="narrative-text">
+        {% for paragraph in s10.narrative.split('\n\n') %}
+        <p>{{ paragraph }}</p>
+        {% endfor %}
+    </div>
+</div>
+</section>
+{% endif %}
+
+<!-- ===================================================================== -->
+<!-- Footer                                                                 -->
+<!-- ===================================================================== -->
+<footer>
+    <p>Generated {{ generated_at }} by Message Miner</p>
+    <p>This report contains personal messaging data. Review before sharing.</p>
+</footer>
+
+<!-- ===================================================================== -->
+<!-- Plotly Charts                                                          -->
+<!-- ===================================================================== -->
+<script>
+const plotlyConfig = {displayModeBar: false};
+
+const darkLayout = {
+    autosize: true,
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor:  'rgba(0,0,0,0)',
+    font: {color: '#ccc', family: '-apple-system, BlinkMacSystemFont, sans-serif'},
+    margin: {l: 150, r: 30, t: 30, b: 50},
+    xaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)'},
+    yaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)'},
+};
+
+// ── Section 1: Top People ────────────────────────────────────────────────
+{% if s1 and s1.get('top_10_people') %}
+{
+    const people = {{ s1.top_10_people | tojson }};
+    const names     = people.map(p => p.name).reverse();
+    const myMsgs    = people.map(p => p.my_messages).reverse();
+    const theirMsgs = people.map(p => p.their_messages).reverse();
+
+    Plotly.newPlot('chart-top-people', [
+        {y: names, x: myMsgs,    type: 'bar', orientation: 'h', name: 'You',  marker: {color: '#1DB954'}},
+        {y: names, x: theirMsgs, type: 'bar', orientation: 'h', name: 'Them', marker: {color: '#4A90D9'}},
+    ], {
+        ...darkLayout,
+        barmode: 'stack',
+        height: 400,
+        legend: {orientation: 'h', y: -0.15, font: {size: 12}},
+    }, plotlyConfig);
+}
+{% endif %}
+
+// ── Section 2: Heatmap ───────────────────────────────────────────────────
+{% if s2 and s2.get('heatmap_data') %}
+try {
+    const heatData = {{ s2.heatmap_data | tojson }};
+    const heatDays  = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const heatHours = Array.from({length: 24}, (_, i) => i + ':00');
+    const z = Array.from({length: 7}, () => Array(24).fill(0));
+    heatData.forEach(function(d) { z[d.day][d.hour] = d.count; });
+
+    Plotly.newPlot('chart-heatmap', [{
+        z: z, x: heatHours, y: heatDays,
+        type: 'heatmap',
+        colorscale: [[0, '#111111'], [0.001, '#0d3320'], [1, '#1DB954']],
+        showscale: false,
+        hovertemplate: '%{y} %{x}: %{z} messages<extra></extra>',
+    }], {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor:  'rgba(0,0,0,0)',
+        font: darkLayout.font,
+        margin: {l: 50, r: 20, t: 20, b: 40},
+        height: 260,
+        xaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)'},
+        yaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)', autorange: 'reversed'},
+    }, {displayModeBar: false});
+} catch(e) { console.error('chart-heatmap error:', e); }
+{% endif %}
+
+// ── Section 2: Monthly Volume ────────────────────────────────────────────
+{% if s2 and s2.get('monthly_volume') %}
+try {
+    const vol = {{ s2.monthly_volume | tojson }};
+    const volX = vol.map(function(v) { return v.month; });
+    const volY = vol.map(function(v) { return v.count; });
+    Plotly.newPlot('chart-monthly-volume', [{
+        x: volX,
+        y: volY,
+        type: 'scatter', mode: 'lines',
+        line: {color: '#1DB954', width: 2},
+        fill: 'tozeroy',
+        fillcolor: 'rgba(29, 185, 84, 0.1)',
+    }], {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor:  'rgba(0,0,0,0)',
+        font: darkLayout.font,
+        height: 300,
+        margin: {l: 60, r: 20, t: 20, b: 50},
+        xaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)', tickangle: -45},
+        yaxis: {gridcolor: 'rgba(255,255,255,0.08)', zerolinecolor: 'rgba(255,255,255,0.08)', title: {text: 'Messages', font: {size: 12}}},
+    }, {displayModeBar: false});
+} catch(e) { console.error('chart-monthly-volume error:', e); }
+{% endif %}
+
+// ── Section 3: Topics Horizontal Bar ────────────────────────────────────
+{% if s3 and s3.get('top_10_topics') %}
+{
+    const topics = {{ s3.top_10_topics | tojson }};
+    const colors = ['#1DB954','#4A90D9','#9B59B6','#E67E22','#E91E63','#F1C40F','#1ABC9C','#E74C3C','#3498DB','#2ECC71'];
+    const rev = [...topics].reverse();
+
+    Plotly.newPlot('chart-topics', [{
+        y: rev.map(t => t.label),
+        x: rev.map(t => t.burst_count),
+        type: 'bar', orientation: 'h',
+        marker: {color: rev.map((_, i) => colors[i % colors.length])},
+        hovertemplate: '%{y}: %{x} conversations<extra></extra>',
+    }], {
+        ...darkLayout,
+        height: 420,
+        margin: {l: 180, r: 30, t: 20, b: 50},
+        xaxis: {...darkLayout.xaxis, title: {text: 'Conversations', font: {size: 12}}},
+        yaxis: {...darkLayout.yaxis},
+    }, plotlyConfig);
+}
+{% endif %}
+
+
+// ── Section 5: Response Time by Person ──────────────────────────────────
+{% if s5 and s5.get('my_response_by_person') %}
+{
+    const resp = ({{ s5.my_response_by_person | tojson }}).filter(r => r.median_response_time_s != null && isFinite(r.median_response_time_s));
+    const toLabel = s => s < 60 ? `${s.toFixed(0)}s` : s < 3600 ? `${(s/60).toFixed(0)}m` : `${(s/3600).toFixed(1)}h`;
+
+    Plotly.newPlot('chart-response-by-person', [{
+        y: resp.map(r => r.name),
+        x: resp.map(r => r.median_response_time_s),
+        type: 'bar', orientation: 'h',
+        marker: {color: '#4A90D9'},
+        text: resp.map(r => toLabel(r.median_response_time_s)),
+        textposition: 'outside',
+        hovertemplate: '%{y}: %{text}<extra></extra>',
+    }], {
+        ...darkLayout,
+        height: 320,
+        margin: {l: 150, r: 80, t: 20, b: 50},
+        xaxis: {...darkLayout.xaxis, title: {text: 'Median response (seconds)', font: {size: 12}}},
+    }, plotlyConfig);
+}
+{% endif %}
+
+// ── Section 5: Response Time Trend ──────────────────────────────────────
+{% if s5 and s5.get('response_time_trend') %}
+{
+    const trend = ({{ s5.response_time_trend | tojson }}).filter(function(t) {
+        return t.median_response_time_s != null && isFinite(t.median_response_time_s);
+    });
+    const yMins = trend.map(function(t) { return +(t.median_response_time_s / 60).toFixed(1); });
+    Plotly.newPlot('chart-response-trend', [{
+        x: trend.map(function(t) { return t.month; }),
+        y: yMins,
+        text: yMins.map(function(m) { return m < 1 ? `${Math.round(m*60)}s` : `${m.toFixed(1)}m`; }),
+        hovertemplate: '%{x}: %{text}<extra></extra>',
+        type: 'scatter', mode: 'lines+markers',
+        line: {color: '#4A90D9', width: 2},
+        marker: {color: '#4A90D9', size: 5},
+    }], {
+        ...darkLayout,
+        height: 280,
+        margin: {l: 60, r: 20, t: 20, b: 50},
+        xaxis: {...darkLayout.xaxis, type: 'category', title: {text: 'Time', font: {size: 12}}, tickangle: -45, nticks: 12},
+        yaxis: {...darkLayout.yaxis, type: 'linear', title: {text: 'Response Time (min)', font: {size: 12}}, tickformat: '.1f'},
+    }, plotlyConfig);
+}
+{% endif %}
+
+// ── Section 9: Function Distribution (Donut) ─────────────────────────────
+{% if s9 and s9.get('function_distribution') %}
+{
+    const funcs = {{ s9.function_distribution | tojson }};
+    const colors = ['#1DB954','#4A90D9','#9B59B6','#E67E22','#E91E63',
+                    '#F1C40F','#1ABC9C','#E74C3C','#3498DB','#2ECC71','#8E44AD','#D35400'];
+
+    Plotly.newPlot('chart-functions', [{
+        labels: funcs.map(f => f.function.replace(/_/g, ' ')),
+        values: funcs.map(f => f.count),
+        type: 'pie',
+        hole: 0.5,
+        marker: {colors},
+        textinfo: 'label+percent',
+        textposition: 'outside',
+        textfont: {color: '#ccc', size: 12},
+    }], {
+        ...darkLayout,
+        height: 450,
+        margin: {l: 20, r: 20, t: 20, b: 20},
+        showlegend: false,
+    }, plotlyConfig);
+}
+{% endif %}
+
+
+</script>
+</body>
+</html>

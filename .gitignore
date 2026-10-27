@@ -1,0 +1,26 @@
+# Credentials and sign-in tokens
+.env
+.token_cache.json
+
+# All pipeline outputs (personal messaging data)
+outputs/
+llm_cache/
+*.parquet
+*.pkl
+
+# ML models
+models/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

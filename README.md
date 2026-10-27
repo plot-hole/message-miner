@@ -1,5 +1,7 @@
 # message-miner
 
+> **Note:** This project is no longer under active development. The Teams chat pipeline (Phase 1) is complete; the email pipeline in `mail-miner/` (Phase 2) was left in progress, and Phase 3 was never started.
+
 ![Message Miner Roadmap](docs/roadmap.svg)
 
 A Spotify Wrapped–style report for your Microsoft Teams chat history. See your top people, topics, emoji, response patterns, and more — all from your own data. Results are stored only on your machine; the LLM steps send message text to the OpenAI API (see [Privacy](#privacy)).
